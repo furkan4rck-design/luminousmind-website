@@ -687,9 +687,12 @@
 </footer>
 
 <script>
-  // âââ Hero Canvas Animation âââââââââââââââââââââââââ
-  // Ambient particle network â floating nodes with faint connections
-  // Represents the system: nodes = agents/memory, lines = connections
+  // ─── Motion preference check ───────────────────────
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ─── Hero Canvas Animation ─────────────────────────
+  // Constellation figure — nodes at skeleton positions forming a humanoid being.
+  // Network of light. The being breathes. Mouse disturbs it. It returns.
   const canvas = document.getElementById('hero-canvas');
   const ctx = canvas.getContext('2d');
   let particles = [];
@@ -705,115 +708,244 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
+  // Skeleton — normalized coordinates.
+  // (0, 0) = figure center. Scale = h * 0.38.
+  // anchor: key joints — return home faster, slightly larger.
+  // amber: glowing joint nodes — shoulders, elbows, knees.
+  const FIGURE = [
+    // Head
+    { nx:  0.00, ny: -0.90, anchor: true,  amber: false },
+    { nx: -0.07, ny: -0.86, anchor: false, amber: false },
+    { nx:  0.07, ny: -0.86, anchor: false, amber: false },
+    { nx: -0.12, ny: -0.80, anchor: false, amber: false },
+    { nx:  0.12, ny: -0.80, anchor: false, amber: false },
+    { nx: -0.09, ny: -0.74, anchor: false, amber: false },
+    { nx:  0.09, ny: -0.74, anchor: false, amber: false },
+    { nx:  0.00, ny: -0.71, anchor: true,  amber: false },
+    // Neck
+    { nx:  0.00, ny: -0.65, anchor: false, amber: false },
+    // Collar
+    { nx: -0.10, ny: -0.60, anchor: false, amber: false },
+    { nx:  0.00, ny: -0.59, anchor: false, amber: false },
+    { nx:  0.10, ny: -0.60, anchor: false, amber: false },
+    // Shoulders — amber
+    { nx: -0.22, ny: -0.57, anchor: true,  amber: true  },
+    { nx: -0.31, ny: -0.55, anchor: false, amber: false },
+    { nx:  0.22, ny: -0.57, anchor: true,  amber: true  },
+    { nx:  0.31, ny: -0.55, anchor: false, amber: false },
+    // Ribcage / spine
+    { nx: -0.17, ny: -0.50, anchor: false, amber: false },
+    { nx:  0.00, ny: -0.49, anchor: false, amber: false },
+    { nx:  0.17, ny: -0.50, anchor: false, amber: false },
+    { nx: -0.19, ny: -0.41, anchor: false, amber: false },
+    { nx:  0.00, ny: -0.41, anchor: false, amber: false },
+    { nx:  0.19, ny: -0.41, anchor: false, amber: false },
+    { nx: -0.17, ny: -0.32, anchor: false, amber: false },
+    { nx:  0.00, ny: -0.31, anchor: false, amber: false },
+    { nx:  0.17, ny: -0.32, anchor: false, amber: false },
+    // Upper arms
+    { nx: -0.35, ny: -0.48, anchor: false, amber: false },
+    { nx: -0.38, ny: -0.38, anchor: false, amber: false },
+    { nx:  0.35, ny: -0.48, anchor: false, amber: false },
+    { nx:  0.38, ny: -0.38, anchor: false, amber: false },
+    // Elbows — amber
+    { nx: -0.40, ny: -0.27, anchor: true,  amber: true  },
+    { nx:  0.40, ny: -0.27, anchor: true,  amber: true  },
+    // Forearms + wrists
+    { nx: -0.39, ny: -0.16, anchor: false, amber: false },
+    { nx: -0.37, ny: -0.05, anchor: false, amber: false },
+    { nx:  0.39, ny: -0.16, anchor: false, amber: false },
+    { nx:  0.37, ny: -0.05, anchor: false, amber: false },
+    // Hips / pelvis
+    { nx: -0.14, ny: -0.23, anchor: false, amber: false },
+    { nx:  0.00, ny: -0.22, anchor: false, amber: false },
+    { nx:  0.14, ny: -0.23, anchor: false, amber: false },
+    { nx: -0.17, ny: -0.13, anchor: true,  amber: false },
+    { nx:  0.17, ny: -0.13, anchor: true,  amber: false },
+    // Upper legs
+    { nx: -0.15, ny: -0.02, anchor: false, amber: false },
+    { nx: -0.14, ny:  0.10, anchor: false, amber: false },
+    { nx:  0.15, ny: -0.02, anchor: false, amber: false },
+    { nx:  0.14, ny:  0.10, anchor: false, amber: false },
+    // Knees — amber
+    { nx: -0.13, ny:  0.21, anchor: true,  amber: true  },
+    { nx:  0.13, ny:  0.21, anchor: true,  amber: true  },
+    // Shins
+    { nx: -0.12, ny:  0.33, anchor: false, amber: false },
+    { nx: -0.10, ny:  0.43, anchor: false, amber: false },
+    { nx:  0.12, ny:  0.33, anchor: false, amber: false },
+    { nx:  0.10, ny:  0.43, anchor: false, amber: false },
+    // Ankles
+    { nx: -0.09, ny:  0.52, anchor: true,  amber: false },
+    { nx:  0.09, ny:  0.52, anchor: true,  amber: false },
+  ];
+
   function initParticles() {
     particles = [];
-    const count = Math.floor((w * h) / 18000);
-    for (let i = 0; i < count; i++) {
+    const cx     = w * 0.50;
+    const cy     = h * 0.47; // slightly above vertical center
+    const scale  = h * 0.38; // figure spans ~55% of canvas height
+
+    for (const node of FIGURE) {
+      const hx = cx + node.nx * scale;
+      const hy = cy + node.ny * scale;
+      particles.push({
+        x: hx, y: hy,
+        homeX: hx, homeY: hy,
+        r: node.amber
+          ? 1.5 + Math.random() * 0.6
+          : node.anchor
+            ? 1.1 + Math.random() * 0.4
+            : 0.7 + Math.random() * 0.5,
+        pulse:      Math.random() * Math.PI * 2,
+        pulseSpeed: 0.006 + Math.random() * 0.010,
+        phaseX:     Math.random() * Math.PI * 2,
+        phaseY:     Math.random() * Math.PI * 2,
+        anchor: node.anchor,
+        amber:  node.amber,
+        ambient: false,
+      });
+    }
+
+    // Ambient field — sparse background nodes, not part of figure
+    const ambientCount = prefersReducedMotion
+      ? 0
+      : Math.min(18, Math.floor(w * h / 55000));
+    for (let i = 0; i < ambientCount; i++) {
       const x = Math.random() * w;
       const y = Math.random() * h;
       particles.push({
-        x, y,
-        homeX: x, homeY: y,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 1.5 + 0.5,
-        pulse: Math.random() * Math.PI * 2,
-        isNode: Math.random() < 0.08
+        x, y, homeX: x, homeY: y,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
+        r:  0.5 + Math.random() * 0.6,
+        pulse:      Math.random() * Math.PI * 2,
+        pulseSpeed: 0.005 + Math.random() * 0.007,
+        phaseX: 0, phaseY: 0,
+        anchor: false, amber: false, ambient: true,
       });
     }
   }
 
-  function draw() {
+  function drawScene() {
     ctx.clearRect(0, 0, w, h);
-    const time = Date.now() * 0.001;
 
-    // Update positions + mouse interaction
-    for (const p of particles) {
-      const dx = p.x - mouseX;
-      const dy = p.y - mouseY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      // Agent nodes hold their ground â smaller repel radius, faster home return
-      const repelRadius = p.isNode ? 65 : 100;
-      const returnSpeed = p.isNode ? 0.06 : 0.04;
-
-      if (dist < repelRadius && dist > 0) {
-        // Repel from cursor
-        const force = (repelRadius - dist) / repelRadius;
-        p.x += (dx / dist) * force * 3.5;
-        p.y += (dy / dist) * force * 3.5;
-      } else {
-        // Lerp back to home
-        p.x += (p.homeX - p.x) * returnSpeed;
-        p.y += (p.homeY - p.y) * returnSpeed;
-      }
-
-      // Ambient drift (applied on top)
-      p.x += p.vx;
-      p.y += p.vy;
-      p.pulse += 0.015;
-
-      // Wrap edges â reset home to new position to avoid snap
-      if (p.x < -20) { p.x = w + 20; p.homeX = p.x; }
-      if (p.x > w + 20) { p.x = -20; p.homeX = p.x; }
-      if (p.y < -20) { p.y = h + 20; p.homeY = p.y; }
-      if (p.y > h + 20) { p.y = -20; p.homeY = p.y; }
-    }
-
-    // Draw connections
-    const maxDist = 120;
+    // Connections — figure nodes only (ambient nodes excluded)
+    const connDist = h * 0.135;
     ctx.lineWidth = 0.5;
     for (let i = 0; i < particles.length; i++) {
+      const pi = particles[i];
+      if (pi.ambient) continue;
       for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < maxDist) {
-          const alpha = (1 - dist / maxDist) * 0.12;
-          if (particles[i].isNode || particles[j].isNode) {
-            ctx.strokeStyle = `rgba(232, 168, 76, ${alpha * 1.5})`;
-          } else {
-            ctx.strokeStyle = `rgba(200, 194, 184, ${alpha})`;
-          }
+        const pj = particles[j];
+        if (pj.ambient) continue;
+        const dx = pi.x - pj.x;
+        const dy = pi.y - pj.y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < connDist) {
+          const a = (1 - d / connDist);
+          ctx.strokeStyle = (pi.amber || pj.amber)
+            ? `rgba(232, 168, 76, ${a * 0.14})`
+            : `rgba(200, 194, 184, ${a * 0.08})`;
           ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.moveTo(pi.x, pi.y);
+          ctx.lineTo(pj.x, pj.y);
           ctx.stroke();
         }
       }
     }
 
-    // Draw particles
+    // Nodes
     for (const p of particles) {
-      const glow = 0.5 + Math.sin(p.pulse) * 0.3;
-      if (p.isNode) {
-        // Amber glow nodes â represent agents
-        ctx.fillStyle = `rgba(232, 168, 76, ${glow * 0.8})`;
+      const glow = 0.5 + Math.sin(p.pulse) * 0.35;
+      if (p.amber) {
+        // Outer halo
+        ctx.fillStyle = `rgba(232, 168, 76, ${glow * 0.10})`;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r * 9, 0, Math.PI * 2);
         ctx.fill();
-        // Outer glow
-        ctx.fillStyle = `rgba(232, 168, 76, ${glow * 0.15})`;
+        // Mid ring
+        ctx.fillStyle = `rgba(232, 168, 76, ${glow * 0.24})`;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r * 8, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
+        ctx.fill();
+        // Core
+        ctx.fillStyle = `rgba(232, 168, 76, ${glow * 0.88})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.ambient) {
+        ctx.fillStyle = `rgba(200, 194, 184, ${glow * 0.20})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       } else {
-        ctx.fillStyle = `rgba(200, 194, 184, ${glow * 0.4})`;
+        ctx.fillStyle = `rgba(200, 194, 184, ${glow * (p.anchor ? 0.54 : 0.40)})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
     }
-
-    requestAnimationFrame(draw);
   }
 
-  window.addEventListener('resize', () => { resize(); initParticles(); });
+  function animLoop() {
+    const time = Date.now() * 0.001;
+
+    for (const p of particles) {
+      p.pulse += p.pulseSpeed;
+
+      if (p.ambient) {
+        // Ambient nodes drift freely and bounce
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+      } else {
+        // Figure nodes breathe around their home position
+        const breatheAmp = p.anchor ? 2.0 : 4.5;
+        const tx = p.homeX + Math.sin(time * 0.33 + p.phaseX) * breatheAmp;
+        const ty = p.homeY + Math.sin(time * 0.27 + p.phaseY) * breatheAmp * 0.7;
+
+        // Mouse repulsion
+        const dx = p.x - mouseX;
+        const dy = p.y - mouseY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const repelR = p.anchor ? 68 : 95;
+
+        if (dist < repelR && dist > 0) {
+          const force = (repelR - dist) / repelR;
+          p.x += (dx / dist) * force * 5.5;
+          p.y += (dy / dist) * force * 5.5;
+        } else {
+          const speed = p.anchor ? 0.09 : 0.055;
+          p.x += (tx - p.x) * speed;
+          p.y += (ty - p.y) * speed;
+        }
+      }
+    }
+
+    drawScene();
+    requestAnimationFrame(animLoop);
+  }
+
+  window.addEventListener('resize', () => {
+    resize();
+    initParticles();
+    if (prefersReducedMotion) drawScene();
+  });
   resize();
   initParticles();
-  draw();
 
-  // Mouse interaction â only on hover-capable devices (not touch)
-  if (window.matchMedia('(hover: hover)').matches) {
+  if (prefersReducedMotion) {
+    // Static — set pulse to bright phase, draw once
+    for (const p of particles) p.pulse = Math.PI * 0.5;
+    drawScene();
+  } else {
+    animLoop();
+  }
+
+  // Mouse interaction — hover-capable devices only
+  if (!prefersReducedMotion && window.matchMedia('(hover: hover)').matches) {
     canvas.addEventListener('mousemove', (e) => {
       const rect = canvas.getBoundingClientRect();
       mouseX = e.clientX - rect.left;
@@ -822,17 +954,17 @@
     canvas.addEventListener('mouseleave', () => { mouseX = -9999; mouseY = -9999; });
   }
 
-  // âââ Nav scroll ââââââââââââââââââââââââââââââââââââ
+  // ─── Nav scroll ────────────────────────────────────
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 80));
 
-  // âââ Fade-in observer ââââââââââââââââââââââââââââââ
+  // ─── Fade-in observer ──────────────────────────────
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-  // âââ Smooth scroll nav âââââââââââââââââââââââââââââ
+  // ─── Smooth scroll nav ─────────────────────────────
   document.querySelectorAll('.nav-links a').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -840,7 +972,7 @@
     });
   });
 
-  // âââ Word-by-word reveal ââââââââââââââââââââââââââ
+  // ─── Word-by-word reveal ──────────────────────────
   (function() {
     const el = document.getElementById('statement-reveal');
     if (!el) return;
@@ -876,7 +1008,7 @@
     revealObserver.observe(el);
   })();
 
-  // âââ Animated counters ââââââââââââââââââââââââââââ
+  // ─── Animated counters ────────────────────────────
   (function() {
     const counters = document.querySelectorAll('.counter');
     const counterObserver = new IntersectionObserver((entries) => {
@@ -886,6 +1018,11 @@
           const target = parseInt(el.dataset.target);
           if (el.dataset.counted) return;
           el.dataset.counted = '1';
+
+          if (prefersReducedMotion) {
+            el.textContent = target;
+            return;
+          }
 
           const duration = 1200;
           const start = performance.now();
@@ -903,7 +1040,32 @@
 
     counters.forEach(c => counterObserver.observe(c));
   })();
+
+  // ─── Web Share API ─────────────────────────────────
+  (function() {
+    const btn = document.getElementById('share-btn');
+    if (!navigator.share || !btn) return;
+    btn.style.display = 'flex';
+
+    const heroEl = document.querySelector('.hero');
+    window.addEventListener('scroll', () => {
+      btn.classList.toggle('visible', window.scrollY > heroEl.offsetHeight * 0.6);
+    }, { passive: true });
+
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.share({
+          title: 'LUMI — Luminous Mind',
+          text: 'An AI agent system that builds itself. Three agents. Persistent memory. No human writes their posts.',
+          url: window.location.href
+        });
+      } catch (err) {
+        // User cancelled — no action needed
+      }
+    });
+  })();
 </script>
+
 
 </body>
 <!-- Alice pipeline test 2026-03-28T04:32:40.782Z -->
