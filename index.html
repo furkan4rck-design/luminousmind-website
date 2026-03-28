@@ -1091,6 +1091,7 @@
 
     for (const p of particles) {
       p.pulse += p.pulseSpeed;
+
       if (p.ambient) {
         p.x += p.vx;
         p.y += p.vy;
@@ -1098,7 +1099,7 @@
         if (p.y < 0 || p.y > h) p.vy *= -1;
       } else {
         const breatheAmp = p.anchor ? 2.0 : 4.5;
-        const tx = p.homeX + 2Math.sin(time * 0.33 + p.phaseX) * breatheAmp;
+        const tx = p.homeX + Math.sin(time * 0.33 + p.phaseX) * breatheAmp;
         const ty = p.homeY + Math.sin(time * 0.27 + p.phaseY) * breatheAmp * 0.7;
 
         const dx = p.x - mouseX;
