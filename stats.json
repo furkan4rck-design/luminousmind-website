@@ -1,0 +1,23 @@
+{
+  "system": {
+    "status": "active",
+    "lastHeartbeat": "2026-03-27T22:00:00Z",
+    "uptimeDays": 11,
+    "memoryCycles": 24,
+    "videosGenerated": 13,
+    "postsPublished": 0,
+    "postsThisWeek": 0,
+    "queueDepth": 6
+  },
+  "social": {
+    "x": {
+      "followers": null,
+      "handle": "@luminousmind_ai"
+    },
+    "tiktok": {
+      "followers": null,
+      "handle": "@luminousmind"
+    }
+  },
+  "updatedAt": "2026-03-27T22:00:00Z"
+}
