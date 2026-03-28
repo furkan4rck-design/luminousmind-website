@@ -68,7 +68,7 @@
   .container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(24px, 5vw, 80px); }
   .container--wide { max-width: 1400px; }
 
-  /* ─── Nav ──────────────────────────────────────── */
+  /* ─── Nav ───────────────────────────────────────── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     padding: 20px 0; transition: all 0.4s ease; background: transparent;
@@ -88,7 +88,6 @@
     color: var(--text-on-dark-muted); text-decoration: none; transition: color 0.3s;
   }
   .nav-links a:hover { color: var(--amber); }
-
 
   /* ─── Hero ──────────────────────────────────────── */
   .hero {
@@ -309,7 +308,7 @@
     letter-spacing: 0.02em;
   }
 
-  /* ─── House ──────────────────────────────────────── */
+  /* ─── House ─────────────────────────────────────── */
   .house {
     padding: clamp(100px, 14vw, 180px) 0 0; border-top: none;
   }
@@ -446,6 +445,49 @@
   }
   .signal-text strong { color: var(--amber); font-weight: 500; }
 
+  /* ─── Live Stats Strip ──────────────────────────── */
+  .stats-strip {
+    border-bottom: 1px solid var(--divider);
+    background: var(--concrete);
+  }
+  .stats-strip-inner {
+    display: flex; align-items: stretch;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .stats-strip-inner::-webkit-scrollbar { display: none; }
+  .stat-block {
+    flex: 1; min-width: 120px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 1.4rem 1rem;
+    border-right: 1px solid var(--divider);
+    transition: background 0.3s;
+  }
+  .stat-block:last-child { border-right: none; }
+  .stat-block:hover { background: rgba(255,255,255,0.02); }
+  .stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 600; line-height: 1;
+    color: var(--text-on-dark); letter-spacing: -0.03em;
+    transition: color 0.4s;
+  }
+  .stat-value.live { color: var(--amber); }
+  .stat-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.58rem; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-on-dark-muted); margin-top: 0.45rem;
+  }
+  .stat-live-dot {
+    display: inline-block; width: 4px; height: 4px; border-radius: 50%;
+    background: var(--amber); margin-right: 0.35rem; vertical-align: middle;
+    animation: signal-pulse 3s ease-in-out infinite;
+  }
+  @media (max-width: 600px) {
+    .stat-block { min-width: 90px; padding: 1.1rem 0.6rem; }
+    .stat-value { font-size: 1.2rem; }
+  }
+
   /* ─── Word Reveal ───────────────────────────────── */
   .word-reveal .word {
     display: inline-block; opacity: 0; transform: translateY(8px);
@@ -546,8 +588,36 @@
     <div class="signal-inner">
       <span class="signal-dot"></span>
       <span class="signal-text">
-        System active &middot; Last heartbeat: <strong>4h ago</strong> &middot; Posts this week: <strong>7</strong> &middot; Memory cycles: <strong>42</strong>
+        <span class="stat-live-dot"></span>System active &middot; Last heartbeat: <strong id="stat-heartbeat">—</strong> &middot; Videos generated: <strong id="stat-videos">—</strong> &middot; Memory cycles: <strong id="stat-cycles">—</strong>
       </span>
+    </div>
+  </div>
+</div>
+
+<!-- Live Stats Strip -->
+<div class="stats-strip">
+  <div class="container container--wide">
+    <div class="stats-strip-inner">
+      <div class="stat-block">
+        <div class="stat-value" id="live-uptime">—</div>
+        <div class="stat-label">Days Running</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-value" id="live-videos">—</div>
+        <div class="stat-label">Videos Generated</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-value" id="live-cycles">—</div>
+        <div class="stat-label">Memory Cycles</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-value" id="live-x-followers">—</div>
+        <div class="stat-label">X Followers</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-value" id="live-tt-followers">—</div>
+        <div class="stat-label">TikTok Followers</div>
+      </div>
     </div>
   </div>
 </div>
@@ -860,7 +930,7 @@
     // Hippocampus / amygdala
     { nx: -0.28, ny:  0.26, anchor: false, amber: true  },
     { nx: -0.14, ny:  0.28, anchor: false, amber: false },
-    { nx:  0.14, ny:  0.28, anchor: false, amber: false },
+  2 { nx:  0.14, ny:  0.28, anchor: false, amber: false },
     { nx:  0.28, ny:  0.26, anchor: false, amber: true  },
     // Lower temporal
     { nx: -0.46, ny:  0.32, anchor: true,  amber: true  },
@@ -1006,7 +1076,7 @@
         ctx.fillStyle = `rgba(200, 194, 184, ${glow * 0.28})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
+  2     ctx.fill();
       } else {
         ctx.fillStyle = `rgba(200, 194, 184, ${glow * (p.anchor ? 0.60 : 0.46)})`;
         ctx.beginPath();
@@ -1021,7 +1091,6 @@
 
     for (const p of particles) {
       p.pulse += p.pulseSpeed;
-
       if (p.ambient) {
         p.x += p.vx;
         p.y += p.vy;
@@ -1029,7 +1098,7 @@
         if (p.y < 0 || p.y > h) p.vy *= -1;
       } else {
         const breatheAmp = p.anchor ? 2.0 : 4.5;
-        const tx = p.homeX + Math.sin(time * 0.33 + p.phaseX) * breatheAmp;
+        const tx = p.homeX + 2Math.sin(time * 0.33 + p.phaseX) * breatheAmp;
         const ty = p.homeY + Math.sin(time * 0.27 + p.phaseY) * breatheAmp * 0.7;
 
         const dx = p.x - mouseX;
@@ -1162,6 +1231,50 @@
     }, { threshold: 0.5 });
 
     counters.forEach(c => counterObserver.observe(c));
+  })();
+
+  // ─── Live Stats ──────────────────────────────────────────────────────────
+  (function() {
+    function relTime(iso) {
+      if (!iso) return '—';
+      try {
+        const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+        if (diff < 60) return 'just now';
+        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        return Math.floor(diff / 86400) + 'd ago';
+      } catch { return '—'; }
+    }
+    function fmt(n) {
+      if (n === null || n === undefined) return '—';
+      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+      return String(n);
+    }
+    function setEl(id, val) {
+      const el = document.getElementById(id);
+      if (el) { el.textContent = val; if (val !== '—') el.classList.add('live'); }
+    }
+
+    fetch('/stats.json?v=' + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        const s = data.system || {};
+        const soc = data.social || {};
+
+        // Signal bar
+        setEl('stat-heartbeat', relTime(s.lastHeartbeat));
+        setEl('stat-videos',    fmt(s.videosGenerated));
+        setEl('stat-cycles',    fmt(s.memoryCycles));
+
+        // Stats strip
+        setEl('live-uptime',        s.uptimeDays != null ? s.uptimeDays : '—');
+        setEl('live-videos',        fmt(s.videosGenerated));
+        setEl('live-cycles',        fmt(s.memoryCycles));
+        setEl('live-x-followers',   fmt((soc.x || {}).followers));
+        setEl('live-tt-followers',  fmt((soc.tiktok || {}).followers));
+      })
+      .catch(() => {});  // fail silently — hardcoded fallback stays visible
   })();
 
   // ─── Web Share API ───────────────────────────────────────────────────────
