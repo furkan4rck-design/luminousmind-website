@@ -170,6 +170,67 @@
   }
   .nav-cta:hover { background: var(--amber) !important; color: var(--cream) !important; }
 
+  /* ─── Hamburger ───────────────────────────────────── */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column; justify-content: center; align-items: center;
+    gap: 5px;
+    width: 44px; height: 44px;
+    background: none; border: none; cursor: pointer;
+    padding: 0; color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-hamburger span {
+    display: block; width: 22px; height: 1.5px;
+    background: currentColor;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: center;
+  }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* ─── Mobile menu ─────────────────────────────────── */
+  .mobile-menu {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 99;
+    background: var(--cream);
+    padding-top: 72px;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .mobile-menu.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .mobile-menu nav {
+    position: static;
+    background: none;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    display: flex; flex-direction: column;
+  }
+  .mobile-menu-link {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem; font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ink); text-decoration: none;
+    padding: 1.1rem clamp(24px, 6vw, 48px);
+    border-bottom: 1px solid var(--divider);
+    display: block;
+    transition: color 0.2s, background 0.2s;
+  }
+  .mobile-menu-link:hover { background: var(--cream-2); }
+  .mobile-menu-cta {
+    color: var(--amber) !important;
+    margin-top: 0.5rem;
+    border-bottom: none;
+  }
+
   /* ─── Hero ────────────────────────────────────────── */
   .hero {
     position: relative;
@@ -189,7 +250,7 @@
     grid-template-columns: 1fr 1fr;
     gap: clamp(40px, 6vw, 80px);
     align-items: center;
-    padding: clamp(60px, 8vw, 100px) 0;
+    padding: clamp(40px, 8vw, 100px) 0;
   }
 
   /* Left: text */
@@ -892,16 +953,36 @@
 
   /* ─── Responsive ──────────────────────────────────────── */
   @media (max-width: 1024px) {
-    .hero-inner { grid-template-columns: 1fr; gap: 40px; }
-    .hero-photo-panel { max-height: 60vw; }
+    .hero {
+      min-height: auto;
+      padding-top: 72px;
+    }
+    .hero-inner {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding: 40px 0 0;
+    }
+    .hero-text-panel {
+      padding-bottom: 40px;
+    }
+    .hero-photo-panel {
+      aspect-ratio: 4 / 3;
+      max-height: none;
+      width: calc(100% + clamp(48px, 10vw, 160px));
+      margin-left: calc(-1 * clamp(24px, 5vw, 80px));
+      margin-right: calc(-1 * clamp(24px, 5vw, 80px));
+      border-radius: 0;
+    }
     .agent-card { height: 72vh; min-height: 480px; }
   }
   @media (max-width: 900px) {
     .cap-grid { grid-template-columns: 1fr; }
     .agent-grid { grid-template-columns: 1fr; gap: 3px; }
-    .agent-card { height: 88vh; max-height: 720px; }
+    .agent-card { height: 60vh; min-height: 400px; max-height: 600px; }
     .gallery { grid-template-columns: 1fr 1fr; }
     .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .mobile-menu { display: block; }
     .footer-top { flex-direction: column; }
     .follow-strip-inner { flex-direction: column; align-items: flex-start; }
     .agent-card .overlay { opacity: 1; }
@@ -915,17 +996,24 @@
     .arch-step { padding: 0; }
     .arch-pillars { grid-template-columns: 1fr; }
     .hero-photo-names { gap: 1.2rem; }
+    .statement { padding: clamp(60px, 10vw, 120px) 0; }
+    .house { padding-top: clamp(60px, 10vw, 120px); }
+    .builders { padding: clamp(60px, 10vw, 120px) 0; }
   }
   @media (max-width: 600px) {
-    .hero-photo-panel { max-height: 80vw; }
+    .hero-photo-panel { aspect-ratio: 3 / 2; }
     .gallery { grid-template-columns: 1fr; }
-    .agent-card { height: 78vh; }
+    .agent-card { height: 56vh; min-height: 360px; }
     .house-facts { gap: 0.6rem; }
     .arch-loop { grid-template-columns: 1fr; }
     .hero-ctas { flex-direction: column; }
-    .follow-strip-btns { flex-direction: column; }
+    .follow-strip-btns { flex-direction: column; width: 100%; }
+    .btn-follow-tiktok, .btn-follow-x { justify-content: center; }
     .hero-photo-names { gap: 0.8rem; }
     .hero-photo-badge { display: none; }
+    .overlay .name { font-size: 1.8rem; }
+    .footer-bottom { flex-direction: column; gap: 0.75rem; }
+    .hero-h1 { font-size: clamp(2.4rem, 9vw, 3.2rem); }
   }
 
   /* ─── content-visibility (safe sections only) ────────── */
@@ -982,8 +1070,22 @@
       <li><a href="#house">The House</a></li>
       <li><a href="https://www.tiktok.com/@luminousmind.co" target="_blank" rel="noopener" class="nav-cta">Follow Lena ↗</a></li>
     </ul>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Navigation menu" aria-hidden="true">
+  <nav aria-label="Mobile navigation">
+    <a href="#team" class="mobile-menu-link">The Team</a>
+    <a href="#builders" class="mobile-menu-link">How It Works</a>
+    <a href="#house" class="mobile-menu-link">The House</a>
+    <a href="https://www.tiktok.com/@luminousmind.co" target="_blank" rel="noopener" class="mobile-menu-link mobile-menu-cta">Follow Lena on TikTok ↗</a>
+    <a href="https://x.com/luminousmind_co" target="_blank" rel="noopener" class="mobile-menu-link">Follow on X ↗</a>
+  </nav>
+</div>
 
 <main id="main-content">
 
@@ -1361,6 +1463,42 @@
 
 <script>
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ─── Mobile menu ─────────────────────────────────────────────────────────
+  (function() {
+    const btn = document.getElementById('nav-hamburger');
+    const menu = document.getElementById('mobile-menu');
+    if (!btn || !menu) return;
+
+    function openMenu() {
+      btn.setAttribute('aria-expanded', 'true');
+      btn.setAttribute('aria-label', 'Close navigation menu');
+      menu.setAttribute('aria-hidden', 'false');
+      menu.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Open navigation menu');
+      menu.setAttribute('aria-hidden', 'true');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    btn.addEventListener('click', function() {
+      btn.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
+    });
+
+    // Close on link click
+    menu.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') closeMenu();
+    });
+  })();
 
   // ─── Hero Canvas — light theme adaptation ────────────────────────────────
   const canvas = document.getElementById('hero-canvas');
