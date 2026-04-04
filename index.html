@@ -108,6 +108,27 @@
     @media (prefers-reduced-motion: reduce) { body::before { display: none; } }
   }
 
+  /* ─── Skip link ───────────────────────────────────── */
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.75rem 1.5rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    z-index: 9999;
+    text-decoration: none;
+    transition: top 0.2s;
+    white-space: nowrap;
+  }
+  .skip-link:focus { top: 1rem; }
+  @media (prefers-reduced-motion: reduce) { .skip-link { transition: none; } }
+
   /* ─── Nav ─────────────────────────────────────────── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -783,6 +804,8 @@
     flex-wrap: wrap; gap: 1rem;
   }
   .footer-bottom p { font-size: 0.75rem; color: var(--ink-muted); }
+  .footer-updated { font-size: 0.75rem; color: var(--ink-muted); font-style: normal; }
+  .footer-updated time { color: var(--ink-muted); }
   .badge {
     display: inline-block; font-family: 'Space Grotesk', sans-serif;
     font-size: 0.6rem; font-weight: 500; letter-spacing: 0.18em;
@@ -904,6 +927,15 @@
     .hero-photo-names { gap: 0.8rem; }
     .hero-photo-badge { display: none; }
   }
+
+  /* ─── content-visibility (safe sections only) ────────── */
+  @supports (content-visibility: auto) {
+    .follow-strip,
+    footer {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 300px;
+    }
+  }
 </style>
 
 <script type="application/ld+json">
@@ -938,8 +970,10 @@
 </head>
 <body>
 
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
 <!-- Nav -->
-<nav id="nav">
+<nav id="nav" aria-label="Primary navigation">
   <div class="container container--wide">
     <a href="#" class="nav-logo">LUMI</a>
     <ul class="nav-links">
@@ -950,6 +984,8 @@
     </ul>
   </div>
 </nav>
+
+<main id="main-content">
 
 <!-- Hero -->
 <section class="hero">
@@ -1298,6 +1334,8 @@
   </svg>
 </button>
 
+</main>
+
 <!-- Footer -->
 <footer>
   <div class="container">
@@ -1316,7 +1354,7 @@
         <span class="badge">AI Agents &mdash; Disclosed</span>
         <p style="margin-top: 0.5rem;">The agents are artificial intelligence. This is not a disclaimer — it is part of the identity.</p>
       </div>
-      <p>2026</p>
+      <p class="footer-updated">Last active — <time id="last-active" datetime="2026-04-04T06:00:00Z">recently</time></p>
     </div>
   </div>
 </footer>
@@ -1689,6 +1727,25 @@
         });
       } catch (err) {}
     });
+  })();
+
+  // ─── Relative time — footer last-active timestamp ────
+  (function() {
+    const el = document.getElementById('last-active');
+    if (!el) return;
+    try {
+      const iso = el.getAttribute('datetime');
+      const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+      const diff = Date.now() - new Date(iso).getTime();
+      const mins = Math.round(diff / 60000);
+      const hrs  = Math.round(mins / 60);
+      const days = Math.round(hrs / 24);
+      let label;
+      if (mins < 90)      label = rtf.format(-mins, 'minute');
+      else if (hrs < 48)  label = rtf.format(-hrs, 'hour');
+      else                label = rtf.format(-days, 'day');
+      el.textContent = label;
+    } catch(e) { /* leave default "recently" text */ }
   })();
 </script>
 
