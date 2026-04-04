@@ -955,15 +955,15 @@
   @media (max-width: 1024px) {
     .hero {
       min-height: auto;
-      padding-top: 72px;
+      padding-top: 60px;
     }
     .hero-inner {
       grid-template-columns: 1fr;
       gap: 0;
-      padding: 40px 0 0;
+      padding: 24px 0 0;
     }
     .hero-text-panel {
-      padding-bottom: 40px;
+      padding-bottom: 32px;
     }
     .hero-photo-panel {
       aspect-ratio: 4 / 3;
@@ -972,6 +972,9 @@
       margin-left: calc(-1 * clamp(24px, 5vw, 80px));
       margin-right: calc(-1 * clamp(24px, 5vw, 80px));
       border-radius: 0;
+    }
+    .hero-photo-panel img {
+      object-position: center 35%;
     }
     .agent-card { height: 72vh; min-height: 480px; }
   }
@@ -985,12 +988,24 @@
     .mobile-menu { display: block; }
     .footer-top { flex-direction: column; }
     .follow-strip-inner { flex-direction: column; align-items: flex-start; }
-    .agent-card .overlay { opacity: 1; }
-    .agent-card .name-bar { opacity: 0; }
-    .agent-card .overlay .divider { transform: scaleX(1); }
-    .agent-card .overlay .personality,
-    .agent-card .overlay .detail,
-    .agent-card .overlay .quote { opacity: 1; transform: translateY(0); }
+    /* Mobile agent cards: tap-to-reveal overlay — default shows photo + name-bar */
+    .agent-card.card-active .overlay { opacity: 1; }
+    .agent-card.card-active .name-bar { opacity: 0; }
+    .agent-card.card-active .overlay .divider { transform: scaleX(1); }
+    .agent-card.card-active .overlay .personality,
+    .agent-card.card-active .overlay .detail,
+    .agent-card.card-active .overlay .quote { opacity: 1; transform: translateY(0); transition-delay: 0s; }
+    /* Tap hint */
+    .agent-card::after {
+      content: 'Tap to read';
+      position: absolute; bottom: 1.2rem; right: 1.2rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem; font-weight: 500; letter-spacing: 0.14em;
+      text-transform: uppercase; color: rgba(250,249,245,0.5);
+      z-index: 4; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .agent-card.card-active::after { opacity: 0; }
     .arch-loop { grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 48px); }
     .arch-arrow { display: none; }
     .arch-step { padding: 0; }
@@ -1497,6 +1512,34 @@
     // Close on Escape
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') closeMenu();
+    });
+  })();
+
+  // ─── Agent card tap-to-reveal (mobile) ───────────────────────────────────
+  (function() {
+    function isTouchDevice() {
+      return window.matchMedia('(hover: none) and (pointer: coarse)').matches || window.innerWidth <= 900;
+    }
+
+    var cards = document.querySelectorAll('.agent-card');
+
+    cards.forEach(function(card) {
+      card.addEventListener('click', function(e) {
+        if (!isTouchDevice()) return; // desktop uses CSS :hover
+        var isActive = card.classList.contains('card-active');
+        // Close all
+        cards.forEach(function(c) { c.classList.remove('card-active'); });
+        // Toggle this one
+        if (!isActive) card.classList.add('card-active');
+      });
+    });
+
+    // Close on outside tap
+    document.addEventListener('click', function(e) {
+      if (!isTouchDevice()) return;
+      if (!e.target.closest('.agent-card')) {
+        cards.forEach(function(c) { c.classList.remove('card-active'); });
+      }
     });
   })();
 
