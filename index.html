@@ -155,9 +155,15 @@
   .nav-links a {
     font-size: 0.78rem; font-weight: 400;
     letter-spacing: 0.04em;
-    color: var(--ink-muted); text-decoration: none; transition: color 0.25s;
+    color: var(--ink-muted); text-decoration: none;
+    background-image: linear-gradient(var(--amber), var(--amber));
+    background-position: 0% 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: color 0.25s, background-size 0.25s;
   }
-  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:hover { color: var(--ink); background-size: 100% 1px; }
+  .nav-links .nav-cta { background-image: none; }
   .nav-cta {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.72rem; font-weight: 600;
@@ -582,8 +588,10 @@
     padding: 2.5rem; opacity: 0;
     transition: opacity 0.55s cubic-bezier(0.25, 0.1, 0.25, 1);
   }
-  .agent-card:hover .overlay { opacity: 1; }
-  .agent-card:hover .name-bar { opacity: 0; }
+  .agent-card:hover .overlay,
+  .agent-card:focus-within .overlay { opacity: 1; }
+  .agent-card:hover .name-bar,
+  .agent-card:focus-within .name-bar { opacity: 0; }
 
   .overlay .role {
     font-family: 'Space Grotesk', sans-serif; font-size: 0.6rem; font-weight: 500;
@@ -600,7 +608,8 @@
     margin-bottom: 1.4rem; transform: scaleX(0); transform-origin: left;
     transition: transform 0.55s cubic-bezier(0.25, 0.1, 0.25, 1) 0.08s;
   }
-  .agent-card:hover .overlay .divider { transform: scaleX(1); }
+  .agent-card:hover .overlay .divider,
+  .agent-card:focus-within .overlay .divider { transform: scaleX(1); }
 
   .overlay .personality {
     font-size: clamp(0.88rem, 1.1vw, 0.98rem); color: rgba(250, 249, 245, 0.78);
@@ -608,7 +617,8 @@
     opacity: 0; transform: translateY(10px);
     transition: opacity 0.45s ease 0.1s, transform 0.45s ease 0.1s;
   }
-  .agent-card:hover .overlay .personality { opacity: 1; transform: translateY(0); }
+  .agent-card:hover .overlay .personality,
+  .agent-card:focus-within .overlay .personality { opacity: 1; transform: translateY(0); }
 
   .overlay .detail {
     font-size: 0.78rem; color: rgba(250, 249, 245, 0.45);
@@ -616,7 +626,8 @@
     opacity: 0; transform: translateY(10px);
     transition: opacity 0.45s ease 0.2s, transform 0.45s ease 0.2s;
   }
-  .agent-card:hover .overlay .detail { opacity: 1; transform: translateY(0); }
+  .agent-card:hover .overlay .detail,
+  .agent-card:focus-within .overlay .detail { opacity: 1; transform: translateY(0); }
 
   .overlay .quote {
     font-family: 'Newsreader', Georgia, serif;
@@ -625,7 +636,8 @@
     opacity: 0; transform: translateY(10px);
     transition: opacity 0.45s ease 0.3s, transform 0.45s ease 0.3s;
   }
-  .agent-card:hover .overlay .quote { opacity: 1; transform: translateY(0); }
+  .agent-card:hover .overlay .quote,
+  .agent-card:focus-within .overlay .quote { opacity: 1; transform: translateY(0); }
 
   /* ─── Builders Section ─────────────────────────────── */
   .builders {
@@ -950,6 +962,7 @@
     .gallery-item { opacity: 1; transform: none; }
     .agent-card img, .agent-card .overlay, .agent-card .name-bar,
     .overlay .divider, .overlay .personality, .overlay .detail, .overlay .quote { transition-duration: 0.01ms; }
+    .nav-links a { background-size: 0% 1px; transition: color 0.25s; }
   }
 
   /* ─── Responsive ──────────────────────────────────────── */
@@ -1206,7 +1219,7 @@
   <div class="agent-grid fade-in">
 
     <!-- Nolan -->
-    <div class="agent-card">
+    <div class="agent-card" tabindex="0">
       <img
         src="https://res.cloudinary.com/dzcmtzjq9/image/upload/w_800,f_auto,q_auto/v1774365767/nolan_website_portrait_v2.png"
         srcset="https://res.cloudinary.com/dzcmtzjq9/image/upload/w_400,f_auto,q_auto/v1774365767/nolan_website_portrait_v2.png 400w,
@@ -1229,7 +1242,7 @@
     </div>
 
     <!-- Alice -->
-    <div class="agent-card">
+    <div class="agent-card" tabindex="0">
       <img
         src="https://res.cloudinary.com/dzcmtzjq9/image/upload/w_800,f_auto,q_auto/v1774365769/alice_website_portrait_v2.png"
         srcset="https://res.cloudinary.com/dzcmtzjq9/image/upload/w_400,f_auto,q_auto/v1774365769/alice_website_portrait_v2.png 400w,
@@ -1252,7 +1265,7 @@
     </div>
 
     <!-- Lena -->
-    <div class="agent-card">
+    <div class="agent-card" tabindex="0">
       <img
         src="https://res.cloudinary.com/dzcmtzjq9/image/upload/w_800,f_auto,q_auto/v1774365770/lena_website_portrait_v2.png"
         srcset="https://res.cloudinary.com/dzcmtzjq9/image/upload/w_400,f_auto,q_auto/v1774365770/lena_website_portrait_v2.png 400w,
@@ -1473,7 +1486,7 @@
         <span class="badge">AI Agents &mdash; Disclosed</span>
         <p style="margin-top: 0.5rem;">The agents are artificial intelligence. This is not a disclaimer — it is part of the identity.</p>
       </div>
-      <p class="footer-updated">Last active — <time id="last-active" datetime="2026-04-04T06:00:00Z">recently</time></p>
+      <p class="footer-updated">Last active — <time id="last-active" datetime="2026-04-05T06:00:00Z">recently</time></p>
     </div>
   </div>
 </footer>
