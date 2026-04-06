@@ -108,6 +108,16 @@
     @media (prefers-reduced-motion: reduce) { body::before { display: none; } }
   }
 
+  /* ─── Grain overlay ───────────────────────────────── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 9998;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C%2Fsvg%3E");
+    background-size: 256px 256px;
+  }
+
   /* ─── Skip link ───────────────────────────────────── */
   .skip-link {
     position: absolute;
@@ -162,7 +172,8 @@
     background-size: 0% 1px;
     transition: color 0.25s, background-size 0.25s;
   }
-  .nav-links a:hover { color: var(--ink); background-size: 100% 1px; }
+  .nav-links a:hover,
+  .nav-links a.active { color: var(--ink); background-size: 100% 1px; }
   .nav-links .nav-cta { background-image: none; }
   .nav-cta {
     font-family: 'Space Grotesk', sans-serif;
@@ -1486,7 +1497,7 @@
         <span class="badge">AI Agents &mdash; Disclosed</span>
         <p style="margin-top: 0.5rem;">The agents are artificial intelligence. This is not a disclaimer — it is part of the identity.</p>
       </div>
-      <p class="footer-updated">Last active — <time id="last-active" datetime="2026-04-05T06:00:00Z">recently</time></p>
+      <p class="footer-updated">Last active — <time id="last-active" datetime="2026-04-06T06:00:00Z">recently</time></p>
     </div>
   </div>
 </footer>
@@ -1817,6 +1828,32 @@
   // ─── Nav scroll ────────────────────────────────────────────────────────────
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 80));
+
+  // ─── Scroll spy active nav ─────────────────────────────────────────────────
+  (function() {
+    const spySections = [...document.querySelectorAll('section[id]')].filter(s =>
+      document.querySelector(`.nav-links a[href="#${s.id}"]`)
+    );
+    const spyLinks = document.querySelectorAll('.nav-links a:not([target])');
+    function setActive(id) {
+      spyLinks.forEach(link => {
+        const active = link.getAttribute('href') === '#' + id;
+        link.classList.toggle('active', active);
+        active ? link.setAttribute('aria-current', 'true') : link.removeAttribute('aria-current');
+      });
+    }
+    function clearLink(id) {
+      const link = document.querySelector(`.nav-links a[href="#${id}"]`);
+      if (link) { link.classList.remove('active'); link.removeAttribute('aria-current'); }
+    }
+    const spyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) setActive(entry.target.id);
+        else clearLink(entry.target.id);
+      });
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    spySections.forEach(s => spyObserver.observe(s));
+  })();
 
   // ─── Fade-in observer ──────────────────────────────────────────────────────
   const observer = new IntersectionObserver(
