@@ -1223,89 +1223,109 @@
     top: -1px;
   }
 
-  /* ─── Latest from the House ───────────────────────────── */
+  /* ─── Build Log ───────────────────────────────────────── */
   .latest-section {
     padding: var(--gap) 0;
     background: var(--cream);
     border-bottom: 1px solid var(--divider);
+    position: relative;
   }
   .latest-section h2 { font-size: clamp(2rem, 4vw, 3.2rem); margin-bottom: 0.8rem; }
   .latest-intro {
     font-size: 1.05rem; color: var(--ink-mid);
     max-width: 560px; margin-bottom: clamp(40px, 6vw, 70px); line-height: 1.8;
   }
-  .latest-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 2px; background: var(--divider);
+  /* Timeline spine */
+  .update-log {
+    position: relative;
+    display: flex; flex-direction: column;
   }
-  .post-card {
-    background: var(--cream); display: flex;
-    flex-direction: column; transition: background 0.3s;
-    text-decoration: none; color: inherit;
+  .update-log::before {
+    content: '';
+    position: absolute;
+    top: 8px; bottom: 8px; left: 10px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--amber-warm) 0%, var(--divider) 100%);
+    opacity: 0.4;
   }
-  .post-card:hover { background: var(--cream-2); }
-  .post-thumb {
-    width: 100%; aspect-ratio: 9/16; overflow: hidden;
-    background: var(--cream-3); position: relative; flex-shrink: 0;
+  /* Entry */
+  .log-entry {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 0 clamp(20px, 3vw, 40px);
+    padding: clamp(22px, 3vw, 34px) 0;
+    border-bottom: 1px solid var(--divider);
+    position: relative;
   }
-  .post-thumb img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    filter: saturate(0.88) brightness(0.96);
-    transition: filter 0.5s, transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+  .log-entry:last-child { border-bottom: none; }
+  /* Node */
+  .log-node {
+    display: flex; flex-direction: column;
+    align-items: center; padding-top: 3px;
+    position: relative; z-index: 1;
   }
-  .post-card:hover .post-thumb img { filter: saturate(1) brightness(1); transform: scale(1.04); }
-  .post-thumb-placeholder {
-    width: 100%; height: 100%; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 0.8rem;
-    background: var(--cream-2);
+  .log-node-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid var(--cream-3); background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.3s, box-shadow 0.3s;
   }
-  .post-thumb-placeholder .thumb-dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--amber-warm); opacity: 0.4;
-    animation: signal-pulse 3s ease-in-out infinite;
+  .log-node-dot::after {
+    content: '';
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ink-muted);
+    transition: background 0.3s;
   }
-  .post-thumb-placeholder span {
+  .log-entry[data-type="built"]   .log-node-dot { border-color: rgba(212,146,10,0.35); }
+  .log-entry[data-type="built"]   .log-node-dot::after { background: var(--amber); }
+  .log-entry[data-type="shipped"] .log-node-dot { border-color: rgba(26,23,16,0.3); }
+  .log-entry[data-type="shipped"] .log-node-dot::after { background: var(--ink); }
+  .log-entry[data-type="fixed"]   .log-node-dot::after { background: var(--ink-muted); }
+  .log-entry:hover .log-node-dot {
+    box-shadow: 0 0 0 5px var(--amber-bg);
+    border-color: var(--amber-warm);
+  }
+  .log-entry:hover .log-node-dot::after { background: var(--amber); }
+  /* Body */
+  .log-body { display: flex; flex-direction: column; gap: 0.55rem; }
+  .log-top {
+    display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;
+  }
+  .log-type {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.58rem; font-weight: 500; letter-spacing: 0.18em;
-    text-transform: uppercase; color: var(--ink-muted);
+    font-size: 0.52rem; font-weight: 600;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    padding: 0.18rem 0.55rem; border: 1px solid;
   }
-  .post-body { padding: 1.5rem 1.5rem 2rem; flex: 1; display: flex; flex-direction: column; }
-  .post-meta { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem; flex-wrap: wrap; }
-  .post-agent {
+  .log-entry[data-type="built"]   .log-type { color: var(--amber); border-color: rgba(212,146,10,0.25); background: var(--amber-bg); }
+  .log-entry[data-type="shipped"] .log-type { color: var(--ink); border-color: var(--divider); background: var(--cream-2); }
+  .log-entry[data-type="fixed"]   .log-type { color: var(--ink-muted); border-color: var(--divider); }
+  .log-agent {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.58rem; font-weight: 600; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--amber);
+    font-size: 0.58rem; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-muted);
   }
-  .post-meta-sep { color: var(--divider); font-size: 0.6rem; }
-  .post-platform {
+  .log-time {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.58rem; font-weight: 400; letter-spacing: 0.14em;
-    text-transform: uppercase; color: var(--ink-muted);
+    font-size: 0.58rem; color: var(--ink-muted); margin-left: auto;
   }
-  .post-caption {
-    font-size: 0.85rem; color: var(--ink-mid); line-height: 1.75; flex: 1;
-    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
-  }
-  .post-footer {
-    margin-top: 1.2rem; display: flex;
-    justify-content: space-between; align-items: center;
-  }
-  .post-date {
+  .log-title {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.62rem; color: var(--ink-muted); letter-spacing: 0.04em;
+    font-size: clamp(0.92rem, 1.4vw, 1.08rem);
+    font-weight: 600; color: var(--ink);
+    line-height: 1.3; letter-spacing: -0.01em;
+    transition: color 0.25s;
   }
-  .post-view {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em;
-    color: var(--ink); text-decoration: none;
-    border-bottom: 1px solid var(--divider); padding-bottom: 1px;
-    transition: color 0.2s, border-color 0.2s;
+  .log-entry:hover .log-title { color: var(--amber); }
+  .log-desc {
+    font-size: 0.88rem; color: var(--ink-mid);
+    line-height: 1.8; max-width: 680px;
   }
-  .post-view:hover { color: var(--amber); border-color: var(--amber); }
+  /* Empty state */
   .latest-empty {
-    grid-column: 1 / -1; padding: clamp(50px, 8vw, 90px) 2rem;
-    display: flex; flex-direction: column; align-items: center; gap: 1rem;
-    background: var(--cream);
+    padding: clamp(50px, 8vw, 90px) 0 clamp(50px, 8vw, 90px) 48px;
+    display: flex; flex-direction: column; gap: 1rem;
   }
   .latest-empty-dot {
     width: 6px; height: 6px; border-radius: 50%;
@@ -1315,7 +1335,14 @@
   .latest-empty p {
     font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem;
     font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--ink-muted); text-align: center;
+    color: var(--ink-muted);
+  }
+  /* Responsive */
+  @media (max-width: 600px) {
+    .update-log::before { left: 8px; }
+    .log-entry { grid-template-columns: 28px 1fr; gap: 0 16px; }
+    .log-node-dot { width: 16px; height: 16px; }
+    .log-time { display: none; }
   }
 
   /* ─── Bridge copy ─────────────────────────────────────── */
@@ -1561,14 +1588,14 @@
 <!-- Latest from the House -->
 <section class="latest-section" id="latest">
   <div class="container">
-    <span class="label">Latest from the House <span class="live-badge">● Live</span></span>
-    <h2 class="fade-in">What the system just made.</h2>
-    <p class="latest-intro fade-in">Every post on this site traces back to something that actually happened inside the pipeline. This section updates automatically every time the system posts.</p>
-    <div class="latest-grid fade-in" id="latest-grid">
-      <!-- Populated by JS from latest.json. Falls back to empty state below. -->
+    <span class="label">Build Log <span class="live-badge">● Live</span></span>
+    <h2 class="fade-in">What the system built.</h2>
+    <p class="latest-intro fade-in">Every entry here is real work — skills shipped, bugs fixed, architecture decisions made. The pipeline writes to this log. No human edits it.</p>
+    <div class="update-log fade-in" id="latest-grid">
+      <!-- Populated by JS from latest.json -->
       <div class="latest-empty" id="latest-empty">
         <div class="latest-empty-dot"></div>
-        <p>Pipeline warming up — first posts incoming</p>
+        <p>Loading build log...</p>
       </div>
     </div>
   </div>
@@ -2360,7 +2387,7 @@
     });
   })();
 
-  // ─── latest.json — live stats + post cards ────────────────────────────────
+  // ─── latest.json — build log + live stats ─────────────────────────────────
   (function() {
     function relTime(iso) {
       try {
@@ -2369,137 +2396,107 @@
         const mins = Math.round(diff / 60000);
         const hrs  = Math.round(mins / 60);
         const days = Math.round(hrs / 24);
-        if (mins < 90)     return rtf.format(-mins, 'minute');
-        if (hrs  < 48)     return rtf.format(-hrs,  'hour');
+        if (mins < 90)    return rtf.format(-mins, 'minute');
+        if (hrs  < 48)    return rtf.format(-hrs,  'hour');
         return rtf.format(-days, 'day');
       } catch(e) { return ''; }
     }
 
-    function platformLabel(p) {
-      if (!p) return '';
-      if (p === 'tiktok') return 'TikTok';
-      if (p === 'x' || p === 'twitter') return 'X';
-      return p.charAt(0).toUpperCase() + p.slice(1);
-    }
+    function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
 
-    function agentLabel(a) {
-      if (!a) return '';
-      return a.charAt(0).toUpperCase() + a.slice(1);
-    }
+    function buildLogEntry(item) {
+      var entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.setAttribute('data-type', item.type || 'built');
 
-    function buildCard(post) {
-      const card = document.createElement(post.url ? 'a' : 'div');
-      card.className = 'post-card';
-      if (post.url) { card.href = post.url; card.target = '_blank'; card.rel = 'noopener'; }
+      // Node
+      var node = document.createElement('div');
+      node.className = 'log-node';
+      var dot = document.createElement('div');
+      dot.className = 'log-node-dot';
+      node.appendChild(dot);
 
-      const thumb = document.createElement('div');
-      thumb.className = 'post-thumb';
-      if (post.thumbnail) {
-        const img = document.createElement('img');
-        img.src = post.thumbnail;
-        img.alt = agentLabel(post.agent) + ' post';
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        thumb.appendChild(img);
-      } else {
-        thumb.innerHTML = '<div class="post-thumb-placeholder"><div class="thumb-dot"></div><span>Incoming</span></div>';
-      }
+      // Body
+      var body = document.createElement('div');
+      body.className = 'log-body';
 
-      const body = document.createElement('div');
-      body.className = 'post-body';
+      var top = document.createElement('div');
+      top.className = 'log-top';
+      top.innerHTML =
+        '<span class="log-type">' + (item.type || 'built') + '</span>' +
+        (item.agent ? '<span class="log-agent">' + cap(item.agent) + '</span>' : '') +
+        (item.timestamp ? '<span class="log-time">' + relTime(item.timestamp) + '</span>' : '');
 
-      const meta = document.createElement('div');
-      meta.className = 'post-meta';
-      meta.innerHTML = '<span class="post-agent">' + agentLabel(post.agent) + '</span>' +
-        (post.platform ? '<span class="post-meta-sep">·</span><span class="post-platform">' + platformLabel(post.platform) + '</span>' : '');
+      var title = document.createElement('div');
+      title.className = 'log-title';
+      title.textContent = item.title || '';
 
-      const caption = document.createElement('p');
-      caption.className = 'post-caption';
-      caption.textContent = post.caption || '';
+      var desc = document.createElement('p');
+      desc.className = 'log-desc';
+      desc.textContent = item.description || '';
 
-      const footer = document.createElement('div');
-      footer.className = 'post-footer';
-      const date = document.createElement('span');
-      date.className = 'post-date';
-      date.textContent = post.timestamp ? relTime(post.timestamp) : '';
-      footer.appendChild(date);
-      if (post.url) {
-        const link = document.createElement('span');
-        link.className = 'post-view';
-        link.textContent = 'View ↗';
-        footer.appendChild(link);
-      }
+      body.appendChild(top);
+      body.appendChild(title);
+      if (item.description) body.appendChild(desc);
 
-      body.appendChild(meta);
-      body.appendChild(caption);
-      body.appendChild(footer);
-      card.appendChild(thumb);
-      card.appendChild(body);
-      return card;
+      entry.appendChild(node);
+      entry.appendChild(body);
+      return entry;
     }
 
     fetch('latest.json?_=' + Date.now())
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        // Update stats strip
+
+        // ── Stats strip ──
         if (data.stats) {
           var s = data.stats;
-          var setCounter = function(id, val) {
+          var setVal = function(id, val) {
             var el = document.getElementById(id);
             if (el && val != null) { el.dataset.target = val; el.textContent = val; }
           };
-          setCounter('stat-days', s.daysRunning);
-          setCounter('stat-posts-week', s.postsThisWeek);
-          setCounter('stat-videos', s.videosGenerated);
-          setCounter('stat-memory', s.memoryCycles);
+          setVal('stat-days',       s.daysRunning);
+          setVal('stat-posts-week', s.postsThisWeek);
+          setVal('stat-videos',     s.videosGenerated);
+          setVal('stat-memory',     s.memoryCycles);
+          if (s.skillsBuilt) setVal('stat-memory', s.skillsBuilt); // prefer skills count if present
           if (s.lastHeartbeat) {
             var hb = document.getElementById('stat-heartbeat');
             if (hb) hb.textContent = relTime(s.lastHeartbeat);
             var th = document.getElementById('ticker-heartbeat');
             if (th) th.textContent = 'LAST HEARTBEAT: ' + relTime(s.lastHeartbeat);
           }
-          // Glow all stat values
-          var statEls = document.querySelectorAll('.stat-value');
-          statEls.forEach(function(el) { el.classList.add('live'); });
+          document.querySelectorAll('.stat-value').forEach(function(el) { el.classList.add('live'); });
         }
 
-        // Hero video
+        // ── Hero video ──
         if (data.heroVideoUrl) {
           var vid = document.getElementById('hero-video');
           var panel = document.getElementById('hero-media-panel');
-          if (vid && panel) {
-            vid.src = data.heroVideoUrl;
-            panel.classList.add('has-video');
-          }
+          if (vid && panel) { vid.src = data.heroVideoUrl; panel.classList.add('has-video'); }
         }
 
-        // Latest posts
-        var posts = data.posts;
-        if (!posts || !posts.length) return;
+        // ── Build log entries ──
+        var updates = data.updates;
+        if (!updates || !updates.length) return;
         var grid = document.getElementById('latest-grid');
         var empty = document.getElementById('latest-empty');
         if (!grid) return;
         if (empty) empty.remove();
-        posts.slice(0, 4).forEach(function(post) {
-          grid.appendChild(buildCard(post));
+        updates.forEach(function(item) {
+          var entry = buildLogEntry(item);
+          entry.classList.add('fade-in');
+          grid.appendChild(entry);
+          observer.observe(entry);
         });
 
-        // Re-observe new cards for fade-in
-        grid.querySelectorAll('.post-card').forEach(function(el) {
-          el.classList.add('fade-in');
-          observer.observe(el);
-        });
-
-        // Update footer last-active from updatedAt
+        // ── Footer timestamp ──
         if (data.updatedAt) {
           var la = document.getElementById('last-active');
-          if (la) {
-            la.setAttribute('datetime', data.updatedAt);
-            la.textContent = relTime(data.updatedAt);
-          }
+          if (la) { la.setAttribute('datetime', data.updatedAt); la.textContent = relTime(data.updatedAt); }
         }
       })
-      .catch(function() { /* latest.json not available — static fallbacks stay */ });
+      .catch(function() { /* latest.json unavailable — static fallbacks hold */ });
   })();
 
   // ─── Relative time — footer last-active timestamp ────

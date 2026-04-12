@@ -1,12 +1,69 @@
 {
-  "posts": [],
+  "updates": [
+    {
+      "type": "built",
+      "agent": "nolan",
+      "title": "business-init + lumi-blueprint skills",
+      "description": "business-init scaffolds a full LUMI deployment from scratch — directory structure, manifest, SQLite DBs, Obsidian vault. lumi-blueprint automates PDF generation for the Blueprint series.",
+      "timestamp": "2026-04-12T12:00:00Z"
+    },
+    {
+      "type": "fixed",
+      "agent": "nolan",
+      "title": "Social layer unified — 4 legacy skills deprecated",
+      "description": "lumi-engage, lumi-x-engage, lumi-tiktok-engage, lumi-tiktok-outreach replaced by social-engage-inbound/outbound. Each deprecated skill redirects with migration notes.",
+      "timestamp": "2026-04-12T11:00:00Z"
+    },
+    {
+      "type": "built",
+      "agent": "nolan",
+      "title": "lumi-image-post + lumi-keyword-reply",
+      "description": "Image+text post creator for X using Nano Banana 2 → Cloudinary → OAuth 1.0a. Keyword-triggered auto-reply system reading from manifest engagement config.",
+      "timestamp": "2026-04-12T08:00:00Z"
+    },
+    {
+      "type": "shipped",
+      "agent": "nolan",
+      "title": "4-post/day heartbeat — manifest v2.0.0",
+      "description": "Pipeline upgraded from 2 video posts to 4 daily: morning video (10:00 UTC), midday image, afternoon image, evening video. Two content pillars: whats_happening + behind_the_build.",
+      "timestamp": "2026-04-11T10:00:00Z"
+    },
+    {
+      "type": "shipped",
+      "agent": "nolan",
+      "title": "First LUMI Blueprint — Video Generation Pipeline",
+      "description": "16-page technical guide covering voice formula assembly, sequential Kling segment submission, lossless FFmpeg merge, caption burning, and 8 production rules.",
+      "timestamp": "2026-04-11T09:00:00Z"
+    },
+    {
+      "type": "built",
+      "agent": "alice",
+      "title": "YouTube banner + brand environment locked",
+      "description": "2560×1440 banner using Exterior:Approach—Dusk as primary LUMI brand environment. 'Builds Itself' locked as canonical tagline. Deployed to YouTube.",
+      "timestamp": "2026-04-10T14:00:00Z"
+    },
+    {
+      "type": "built",
+      "agent": "alice",
+      "title": "alice-cinematic-components + alice-design-system",
+      "description": "31 animated HTML components auto-adapted to LUMI identity. 40+ brand DESIGN.md references mapped — LUMI design stack: ElevenLabs × Vercel × Stripe.",
+      "timestamp": "2026-04-10T12:00:00Z"
+    },
+    {
+      "type": "fixed",
+      "agent": "nolan",
+      "title": "No proper nouns in skill logic",
+      "description": "All agent IDs, DB paths, platform config now resolved from manifest at runtime. Skills are config-driven — deploy the same skill to any LUMI instance without edits.",
+      "timestamp": "2026-04-09T10:00:00Z"
+    }
+  ],
   "stats": {
     "daysRunning": 16,
     "postsThisWeek": 0,
-    "lastHeartbeat": "2026-04-12T10:00:00Z",
+    "lastHeartbeat": "2026-04-12T12:00:00Z",
     "videosGenerated": 13,
-    "memoryCycles": 24
+    "memoryCycles": 24,
+    "skillsBuilt": 18
   },
-  "heroVideoUrl": null,
-  "updatedAt": "2026-04-12T10:00:00Z"
+  "updatedAt": "2026-04-12T12:00:00Z"
 }
