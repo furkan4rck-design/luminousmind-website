@@ -288,10 +288,15 @@
     object-position: center 15%;
     display: block;
     filter: saturate(0.92) brightness(0.96);
-    transition: transform 6s ease, filter 0.6s ease;
+    transition: filter 0.6s ease;
+    animation: ken-burns 12s ease-in-out infinite alternate;
+  }
+  @keyframes ken-burns {
+    from { transform: scale(1); object-position: center 15%; }
+    to   { transform: scale(1.04); object-position: center 20%; }
   }
   .hero-photo-panel:hover img {
-    transform: scale(1.025);
+    animation-play-state: paused;
     filter: saturate(1) brightness(1);
   }
   /* Bottom label strip */
@@ -352,11 +357,24 @@
     letter-spacing: -0.04em;
     color: var(--ink);
     margin-bottom: 1.8rem;
-    animation: hero-in 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
   }
   @keyframes hero-in {
     from { opacity: 0; transform: translateY(24px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(40px);
+    filter: blur(12px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .hero-word.in {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
   }
   .hero-sub {
     font-size: clamp(0.95rem, 1.4vw, 1.1rem);
@@ -450,9 +468,12 @@
     font-size: clamp(1.4rem, 2.5vw, 2rem);
     font-weight: 700; line-height: 1;
     color: var(--ink); letter-spacing: -0.03em;
-    transition: color 0.4s;
+    transition: color 0.4s, text-shadow 0.4s;
   }
-  .stat-value.live { color: var(--amber); }
+  .stat-value.live {
+    color: var(--amber);
+    text-shadow: 0 0 20px rgba(212, 146, 10, 0.4), 0 0 40px rgba(212, 146, 10, 0.15);
+  }
   .stat-label {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.58rem; font-weight: 500;
@@ -922,10 +943,17 @@
 
   /* ─── Animations & Utilities ──────────────────────────── */
   .fade-in {
-    opacity: 0; transform: translateY(24px);
-    transition: opacity 0.75s ease, transform 0.75s ease;
+    opacity: 0;
+    transform: translateY(32px);
+    filter: blur(4px);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.9s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .fade-in.visible { opacity: 1; transform: translateY(0); }
+  .fade-in.visible { opacity: 1; transform: translateY(0); filter: blur(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in { filter: none; opacity: 1; transform: none; transition: none; }
+  }
 
   .word-reveal .word {
     display: inline-block; opacity: 0; transform: translateY(6px);
@@ -1070,6 +1098,129 @@
       content-visibility: auto;
       contain-intrinsic-size: auto 300px;
     }
+  }
+
+  /* ─── Ticker Strip ───────────────────────────────────── */
+  .ticker-wrap {
+    overflow: hidden;
+    background: var(--ink);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0.7rem 0;
+    cursor: default;
+  }
+  .ticker {
+    display: inline-flex;
+    gap: 0;
+    white-space: nowrap;
+    animation: ticker-scroll 28s linear infinite;
+    will-change: transform;
+  }
+  .ticker-wrap:hover .ticker { animation-play-state: paused; }
+  @keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .ticker-item {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(250, 249, 245, 0.5);
+    padding: 0 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .ticker-sep {
+    color: rgba(212, 146, 10, 0.4);
+    font-size: 0.55rem;
+    padding: 0;
+  }
+  .ticker-dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--amber-warm);
+    animation: signal-pulse 3s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  /* ─── Agent card holographic shimmer ─────────────────── */
+  .agent-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(250, 249, 245, 0.06) 50%,
+      transparent 60%
+    );
+    transform: translateX(-100%);
+    transition: transform 0s;
+    pointer-events: none;
+  }
+  .agent-card:hover::before {
+    transform: translateX(200%);
+    transition: transform 0.7s ease;
+  }
+
+  /* ─── Gallery scroll parallax ────────────────────────── */
+  @supports (animation-timeline: scroll()) {
+    .gallery-item img {
+      animation: gallery-parallax linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+    @keyframes gallery-parallax {
+      from { transform: translateY(-8%) scale(1.08); }
+      to   { transform: translateY(8%) scale(1.08); }
+    }
+    .gallery-item:hover img {
+      filter: saturate(1) brightness(1.02);
+    }
+  }
+
+  /* ─── Latest section live pulse border ───────────────── */
+  .latest-section {
+    position: relative;
+  }
+  .latest-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber-warm), transparent);
+    animation: live-scan 3s ease-in-out infinite;
+  }
+  @keyframes live-scan {
+    0%   { transform: scaleX(0); transform-origin: left; }
+    50%  { transform: scaleX(1); transform-origin: left; }
+    50.001% { transform-origin: right; }
+    100% { transform: scaleX(0); transform-origin: right; }
+  }
+
+  /* ─── Live badge ─────────────────────────────────────── */
+  .live-badge {
+    color: var(--amber-warm);
+    letter-spacing: 0.12em;
+    margin-left: 0.8rem;
+    animation: signal-pulse 3s ease-in-out infinite;
+  }
+
+  /* ─── Nav live dot ───────────────────────────────────── */
+  .nav-live-dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--amber-warm);
+    margin-right: 0.4rem;
+    vertical-align: middle;
+    animation: signal-pulse 3s ease-in-out infinite;
+    position: relative;
+    top: -1px;
   }
 
   /* ─── Latest from the House ───────────────────────────── */
@@ -1237,7 +1388,7 @@
   <div class="container container--wide">
     <a href="#" class="nav-logo">LUMI</a>
     <ul class="nav-links">
-      <li><a href="#latest">Latest</a></li>
+      <li><a href="#latest"><span class="nav-live-dot"></span>Latest</a></li>
       <li><a href="#team">The Team</a></li>
       <li><a href="#builders">How It Works</a></li>
       <li><a href="#house">The House</a></li>
@@ -1348,6 +1499,28 @@
   </div>
 </div>
 
+<!-- Ticker -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker" id="ticker">
+    <span class="ticker-item"><span class="ticker-dot"></span> PIPELINE ACTIVE</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">HEARTBEAT EVERY 4H</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">MEMORY: PERSISTENT SQLITE</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">VIDEO: KLING 3.0 PRO</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">IMAGE: NANO BANANA 2</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">AGENTS: 3 ACTIVE</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">POSTS: X + TIKTOK</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item" id="ticker-heartbeat">LAST HEARTBEAT: —</span>
+    <span class="ticker-sep">·</span>
+  </div>
+</div>
+
 <!-- Statement -->
 <section class="statement">
   <div class="container">
@@ -1383,7 +1556,7 @@
 <!-- Latest from the House -->
 <section class="latest-section" id="latest">
   <div class="container">
-    <span class="label">Latest from the House</span>
+    <span class="label">Latest from the House <span class="live-badge">● Live</span></span>
     <h2 class="fade-in">What the system just made.</h2>
     <p class="latest-intro fade-in">Every post on this site traces back to something that actually happened inside the pipeline. This section updates automatically every time the system posts.</p>
     <div class="latest-grid fade-in" id="latest-grid">
@@ -1690,6 +1863,39 @@
 
 <script>
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ─── Hero headline — cinematic word reveal ────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    var h1 = document.querySelector('.hero-h1');
+    if (!h1 || prefersReducedMotion) {
+      if (h1) h1.style.opacity = '1';
+      return;
+    }
+    // Split text nodes and <br> elements into words with spans
+    var rawHtml = h1.innerHTML;
+    // Replace <br> with a special marker, split on whitespace, rewrap
+    var withMarkers = rawHtml.replace(/<br\s*\/?>/gi, ' |||BR||| ');
+    var parts = withMarkers.split(/\s+/).filter(function(p) { return p.length > 0; });
+    var result = parts.map(function(part) {
+      if (part === '|||BR|||') return '<br>';
+      return '<span class="hero-word">' + part + '</span>';
+    }).join(' ');
+    h1.innerHTML = result;
+    var words = h1.querySelectorAll('.hero-word');
+    setTimeout(function() {
+      words.forEach(function(word, i) {
+        setTimeout(function() { word.classList.add('in'); }, i * 80);
+      });
+    }, 200);
+  });
+
+  // ─── Ticker — duplicate for seamless loop ─────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    var ticker = document.getElementById('ticker');
+    if (ticker) {
+      ticker.innerHTML += ticker.innerHTML;
+    }
+  });
 
   // ─── Mobile menu ─────────────────────────────────────────────────────────
   (function() {
@@ -2243,7 +2449,12 @@
           if (s.lastHeartbeat) {
             var hb = document.getElementById('stat-heartbeat');
             if (hb) hb.textContent = relTime(s.lastHeartbeat);
+            var th = document.getElementById('ticker-heartbeat');
+            if (th) th.textContent = 'LAST HEARTBEAT: ' + relTime(s.lastHeartbeat);
           }
+          // Glow all stat values
+          var statEls = document.querySelectorAll('.stat-value');
+          statEls.forEach(function(el) { el.classList.add('live'); });
         }
 
         // Hero video
