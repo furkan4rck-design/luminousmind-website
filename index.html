@@ -1225,39 +1225,97 @@
 
   /* ─── Build Log ───────────────────────────────────────── */
   .latest-section {
-    padding: var(--gap) 0;
-    background: var(--cream);
-    border-bottom: 1px solid var(--divider);
+    padding: var(--gap) 0 0;
+    background: var(--ink);
     position: relative;
+    overflow: hidden;
   }
-  .latest-section h2 { font-size: clamp(2rem, 4vw, 3.2rem); margin-bottom: 0.8rem; }
+  /* Subtle ambient glow top-right */
+  .latest-section::after {
+    content: '';
+    position: absolute; top: -120px; right: -100px;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,146,10,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  /* Header row */
+  .latest-header {
+    display: flex; justify-content: space-between;
+    align-items: flex-end; gap: 2rem;
+    margin-bottom: clamp(40px, 6vw, 70px);
+    flex-wrap: wrap;
+  }
+  .latest-header-left { flex: 1; min-width: 240px; }
+  .latest-section .label,
+  .latest-label {
+    color: rgba(250,249,245,0.35) !important;
+  }
+  .latest-section h2 {
+    font-size: clamp(2rem, 4.5vw, 3.8rem);
+    color: #FAF9F5 !important;
+    margin-bottom: 0.8rem;
+  }
   .latest-intro {
-    font-size: 1.05rem; color: var(--ink-mid);
-    max-width: 560px; margin-bottom: clamp(40px, 6vw, 70px); line-height: 1.8;
+    font-size: 1.05rem; color: rgba(250,249,245,0.5);
+    max-width: 500px; line-height: 1.8; margin-bottom: 0;
   }
+  /* Stat pills top-right */
+  .latest-header-right {
+    display: flex; gap: 1px; flex-shrink: 0;
+    background: rgba(250,249,245,0.06);
+    border: 1px solid rgba(250,249,245,0.07);
+  }
+  .latest-stat-pill {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 1.2rem 2rem; gap: 0.3rem;
+    border-right: 1px solid rgba(250,249,245,0.07);
+  }
+  .latest-stat-pill:last-child { border-right: none; }
+  .lsp-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 700; color: var(--amber);
+    line-height: 1; letter-spacing: -0.04em;
+    text-shadow: 0 0 24px rgba(212,146,10,0.35);
+  }
+  .lsp-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.58rem; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(250,249,245,0.35);
+  }
+  /* Live badge dark context */
+  .latest-section .live-badge { color: var(--amber-warm); }
+
   /* Timeline spine */
   .update-log {
     position: relative;
     display: flex; flex-direction: column;
+    border-top: 1px solid rgba(250,249,245,0.07);
   }
   .update-log::before {
     content: '';
     position: absolute;
-    top: 8px; bottom: 8px; left: 10px;
+    top: 0; bottom: 0; left: 10px;
     width: 1px;
-    background: linear-gradient(to bottom, var(--amber-warm) 0%, var(--divider) 100%);
-    opacity: 0.4;
+    background: linear-gradient(to bottom,
+      var(--amber-warm) 0%,
+      rgba(250,249,245,0.08) 100%);
+    opacity: 0.5;
   }
   /* Entry */
   .log-entry {
     display: grid;
     grid-template-columns: 40px 1fr;
     gap: 0 clamp(20px, 3vw, 40px);
-    padding: clamp(22px, 3vw, 34px) 0;
-    border-bottom: 1px solid var(--divider);
+    padding: clamp(24px, 3.5vw, 40px) 0;
+    border-bottom: 1px solid rgba(250,249,245,0.07);
     position: relative;
+    transition: background 0.3s;
   }
   .log-entry:last-child { border-bottom: none; }
+  .log-entry:hover { background: rgba(250,249,245,0.025); }
   /* Node */
   .log-node {
     display: flex; flex-direction: column;
@@ -1266,7 +1324,8 @@
   }
   .log-node-dot {
     width: 20px; height: 20px; border-radius: 50%;
-    border: 2px solid var(--cream-3); background: var(--cream);
+    border: 2px solid rgba(250,249,245,0.12);
+    background: var(--ink);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     transition: border-color 0.3s, box-shadow 0.3s;
@@ -1274,53 +1333,53 @@
   .log-node-dot::after {
     content: '';
     width: 7px; height: 7px; border-radius: 50%;
-    background: var(--ink-muted);
+    background: rgba(250,249,245,0.25);
     transition: background 0.3s;
   }
-  .log-entry[data-type="built"]   .log-node-dot { border-color: rgba(212,146,10,0.35); }
+  .log-entry[data-type="built"]   .log-node-dot { border-color: rgba(212,146,10,0.5); }
   .log-entry[data-type="built"]   .log-node-dot::after { background: var(--amber); }
-  .log-entry[data-type="shipped"] .log-node-dot { border-color: rgba(26,23,16,0.3); }
-  .log-entry[data-type="shipped"] .log-node-dot::after { background: var(--ink); }
-  .log-entry[data-type="fixed"]   .log-node-dot::after { background: var(--ink-muted); }
+  .log-entry[data-type="shipped"] .log-node-dot { border-color: rgba(250,249,245,0.3); }
+  .log-entry[data-type="shipped"] .log-node-dot::after { background: rgba(250,249,245,0.7); }
+  .log-entry[data-type="fixed"]   .log-node-dot::after { background: rgba(250,249,245,0.3); }
   .log-entry:hover .log-node-dot {
-    box-shadow: 0 0 0 5px var(--amber-bg);
+    box-shadow: 0 0 0 5px rgba(212,146,10,0.12);
     border-color: var(--amber-warm);
   }
   .log-entry:hover .log-node-dot::after { background: var(--amber); }
   /* Body */
-  .log-body { display: flex; flex-direction: column; gap: 0.55rem; }
-  .log-top {
-    display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;
-  }
+  .log-body { display: flex; flex-direction: column; gap: 0.6rem; }
+  .log-top { display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; }
   .log-type {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.52rem; font-weight: 600;
     letter-spacing: 0.22em; text-transform: uppercase;
-    padding: 0.18rem 0.55rem; border: 1px solid;
+    padding: 0.18rem 0.6rem; border: 1px solid;
   }
-  .log-entry[data-type="built"]   .log-type { color: var(--amber); border-color: rgba(212,146,10,0.25); background: var(--amber-bg); }
-  .log-entry[data-type="shipped"] .log-type { color: var(--ink); border-color: var(--divider); background: var(--cream-2); }
-  .log-entry[data-type="fixed"]   .log-type { color: var(--ink-muted); border-color: var(--divider); }
+  .log-entry[data-type="built"]   .log-type { color: var(--amber); border-color: rgba(212,146,10,0.3); background: rgba(212,146,10,0.08); }
+  .log-entry[data-type="shipped"] .log-type { color: rgba(250,249,245,0.7); border-color: rgba(250,249,245,0.15); background: rgba(250,249,245,0.05); }
+  .log-entry[data-type="fixed"]   .log-type { color: rgba(250,249,245,0.4); border-color: rgba(250,249,245,0.1); }
   .log-agent {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.58rem; font-weight: 500;
-    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-muted);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(250,249,245,0.3);
   }
   .log-time {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.58rem; color: var(--ink-muted); margin-left: auto;
+    font-size: 0.58rem; color: rgba(250,249,245,0.25);
+    margin-left: auto;
   }
   .log-title {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(0.92rem, 1.4vw, 1.08rem);
-    font-weight: 600; color: var(--ink);
-    line-height: 1.3; letter-spacing: -0.01em;
+    font-size: clamp(1rem, 1.6vw, 1.22rem);
+    font-weight: 600; color: #FAF9F5;
+    line-height: 1.3; letter-spacing: -0.02em;
     transition: color 0.25s;
   }
-  .log-entry:hover .log-title { color: var(--amber); }
+  .log-entry:hover .log-title { color: var(--amber-warm); }
   .log-desc {
-    font-size: 0.88rem; color: var(--ink-mid);
-    line-height: 1.8; max-width: 680px;
+    font-size: 0.9rem; color: rgba(250,249,245,0.45);
+    line-height: 1.82; max-width: 640px;
   }
   /* Empty state */
   .latest-empty {
@@ -1329,18 +1388,23 @@
   }
   .latest-empty-dot {
     width: 6px; height: 6px; border-radius: 50%;
-    background: var(--amber-warm); opacity: 0.5;
+    background: var(--amber-warm); opacity: 0.4;
     animation: signal-pulse 3s ease-in-out infinite;
   }
   .latest-empty p {
-    font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem;
-    font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--ink-muted);
+    font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem;
+    font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(250,249,245,0.3);
   }
   /* Responsive */
+  @media (max-width: 700px) {
+    .latest-header { flex-direction: column; align-items: flex-start; }
+    .latest-header-right { width: 100%; }
+    .latest-stat-pill { flex: 1; }
+  }
   @media (max-width: 600px) {
     .update-log::before { left: 8px; }
-    .log-entry { grid-template-columns: 28px 1fr; gap: 0 16px; }
+    .log-entry { grid-template-columns: 28px 1fr; gap: 0 14px; }
     .log-node-dot { width: 16px; height: 16px; }
     .log-time { display: none; }
   }
@@ -1562,6 +1626,35 @@
   </div>
 </section>
 
+<!-- Build Log -->
+<section class="latest-section" id="latest">
+  <div class="container">
+    <div class="latest-header">
+      <div class="latest-header-left">
+        <span class="label latest-label">System Log <span class="live-badge">● Live</span></span>
+        <h2 class="fade-in">The work, in public.</h2>
+        <p class="latest-intro fade-in">Everything here actually happened. The pipeline writes this log. No human edits it.</p>
+      </div>
+      <div class="latest-header-right fade-in">
+        <div class="latest-stat-pill" id="log-days-pill">
+          <span class="lsp-value" id="stat-days-log">16</span>
+          <span class="lsp-label">days running</span>
+        </div>
+        <div class="latest-stat-pill">
+          <span class="lsp-value" id="stat-skills-log">18</span>
+          <span class="lsp-label">things built</span>
+        </div>
+      </div>
+    </div>
+    <div class="update-log" id="latest-grid">
+      <div class="latest-empty" id="latest-empty">
+        <div class="latest-empty-dot"></div>
+        <p>Loading...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Follow CTA Strip -->
 <div class="follow-strip">
   <div class="container">
@@ -1584,22 +1677,6 @@
     </div>
   </div>
 </div>
-
-<!-- Latest from the House -->
-<section class="latest-section" id="latest">
-  <div class="container">
-    <span class="label">Build Log <span class="live-badge">● Live</span></span>
-    <h2 class="fade-in">What the system built.</h2>
-    <p class="latest-intro fade-in">Every entry here is real work — skills shipped, bugs fixed, architecture decisions made. The pipeline writes to this log. No human edits it.</p>
-    <div class="update-log fade-in" id="latest-grid">
-      <!-- Populated by JS from latest.json -->
-      <div class="latest-empty" id="latest-empty">
-        <div class="latest-empty-dot"></div>
-        <p>Loading build log...</p>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- Team -->
 <section class="team" id="team">
@@ -2456,6 +2533,8 @@
             if (el && val != null) { el.dataset.target = val; el.textContent = val; }
           };
           setVal('stat-days',       s.daysRunning);
+          setVal('stat-days-log',   s.daysRunning);
+          setVal('stat-skills-log', s.skillsBuilt);
           setVal('stat-posts-week', s.postsThisWeek);
           setVal('stat-videos',     s.videosGenerated);
           setVal('stat-memory',     s.memoryCycles);
