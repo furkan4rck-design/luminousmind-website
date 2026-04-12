@@ -1409,6 +1409,138 @@
     .log-time { display: none; }
   }
 
+  /* ─── Infrastructure ─────────────────────────────────── */
+  .infrastructure {
+    padding: var(--gap) 0;
+    background: var(--cream-2);
+    border-top: 1px solid var(--divider);
+    border-bottom: 1px solid var(--divider);
+  }
+  .infra-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(24px, 4vw, 60px);
+    align-items: end;
+    margin-bottom: clamp(50px, 7vw, 90px);
+  }
+  .infra-header h2 { font-size: clamp(2.2rem, 4.5vw, 3.8rem); }
+  .infra-sub {
+    font-size: 1.05rem; color: var(--ink-mid);
+    line-height: 1.8; max-width: 480px;
+  }
+  /* 3×2 grid */
+  .infra-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--divider);
+    margin-bottom: clamp(40px, 6vw, 70px);
+  }
+  .infra-card {
+    background: var(--cream);
+    padding: clamp(28px, 4vw, 48px);
+    display: flex; flex-direction: column;
+    gap: 0;
+    position: relative;
+    transition: background 0.3s;
+    overflow: hidden;
+  }
+  .infra-card::before {
+    content: '';
+    position: absolute; top: 0; left: clamp(28px, 4vw, 48px);
+    width: 24px; height: 2px;
+    background: var(--amber-warm); opacity: 0;
+    transition: opacity 0.3s, width 0.4s;
+  }
+  .infra-card:hover { background: var(--cream-2); }
+  .infra-card:hover::before { opacity: 1; width: 40px; }
+  /* Top row */
+  .infra-card-top {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: clamp(1.2rem, 2vw, 1.8rem);
+    padding-top: clamp(1rem, 1.5vw, 1.4rem);
+  }
+  .infra-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 700; color: var(--amber);
+    line-height: 1; letter-spacing: -0.05em;
+    opacity: 0.35;
+    transition: opacity 0.3s;
+  }
+  .infra-card:hover .infra-num { opacity: 0.7; }
+  .infra-tag {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.55rem; font-weight: 600;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-muted);
+    padding: 0.2rem 0.65rem;
+    border: 1px solid var(--divider);
+    background: var(--cream-2);
+  }
+  /* Name */
+  .infra-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+    font-weight: 700; color: var(--ink);
+    letter-spacing: -0.02em; line-height: 1.15;
+    margin-bottom: 0.9rem;
+    transition: color 0.25s;
+  }
+  .infra-card:hover .infra-name { color: var(--amber); }
+  /* Description */
+  .infra-desc {
+    font-size: 0.875rem; color: var(--ink-mid);
+    line-height: 1.85; flex: 1;
+    margin-bottom: 1.6rem;
+  }
+  /* Footer */
+  .infra-footer {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--divider);
+    margin-top: auto;
+  }
+  .infra-stat {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.62rem; font-weight: 500;
+    letter-spacing: 0.08em; color: var(--ink-muted);
+  }
+  .infra-status {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.55rem; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+  }
+  .infra-status--live {
+    color: var(--amber);
+    border: 1px solid rgba(212,146,10,0.25);
+    background: var(--amber-bg);
+  }
+  /* Footnote */
+  .infra-footnote {
+    border-left: 3px solid var(--amber-warm);
+    padding: clamp(1.2rem, 2vw, 1.8rem) clamp(1.5rem, 3vw, 2.5rem);
+    background: var(--cream);
+  }
+  .infra-footnote p {
+    font-family: 'Newsreader', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1rem, 1.6vw, 1.18rem);
+    color: var(--ink-mid); line-height: 1.6;
+    max-width: 720px;
+  }
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .infra-grid { grid-template-columns: repeat(2, 1fr); }
+    .infra-header { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .infra-grid { grid-template-columns: 1fr; }
+  }
+
   /* ─── Bridge copy ─────────────────────────────────────── */
   .team-bridge {
     padding: clamp(50px, 7vw, 90px) 0 clamp(0px, 1vw, 20px);
@@ -1482,6 +1614,7 @@
     <ul class="nav-links">
       <li><a href="#latest"><span class="nav-live-dot"></span>Latest</a></li>
       <li><a href="#team">The Team</a></li>
+      <li><a href="#infrastructure">The Pipeline</a></li>
       <li><a href="#builders">How It Works</a></li>
       <li><a href="#house">The House</a></li>
       <li><a href="https://www.tiktok.com/@luminousmind.co" target="_blank" rel="noopener" class="nav-cta">Follow Lena ↗</a></li>
@@ -1497,6 +1630,7 @@
   <nav aria-label="Mobile navigation">
     <a href="#latest" class="mobile-menu-link">Latest</a>
     <a href="#team" class="mobile-menu-link">The Team</a>
+    <a href="#infrastructure" class="mobile-menu-link">The Pipeline</a>
     <a href="#builders" class="mobile-menu-link">How It Works</a>
     <a href="#house" class="mobile-menu-link">The House</a>
     <a href="https://www.tiktok.com/@luminousmind.co" target="_blank" rel="noopener" class="mobile-menu-link mobile-menu-cta">TikTok — @luminousmind.co ↗</a>
@@ -1768,6 +1902,101 @@
     <p class="fade-in">Three fixed personalities. Real work every day. Here's the machine behind it — no explanations withheld.</p>
   </div>
 </div>
+
+<!-- The Infrastructure -->
+<section class="infrastructure" id="infrastructure">
+  <div class="container">
+    <span class="label">The Infrastructure</span>
+    <div class="infra-header">
+      <h2 class="fade-in">Six systems. One pipeline.</h2>
+      <p class="infra-sub fade-in">Everything LUMI does runs on components we built from scratch. Each one is designed to stand alone. Together they make the whole thing move.</p>
+    </div>
+    <div class="infra-grid fade-in">
+
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <span class="infra-num">01</span>
+          <span class="infra-tag">Orchestration</span>
+        </div>
+        <h3 class="infra-name">The Heartbeat</h3>
+        <p class="infra-desc">A scheduling engine that fires four times a day, every day. It decides what gets made, who makes it, and when it posts. Nothing runs manually. The cycle is the system.</p>
+        <div class="infra-footer">
+          <span class="infra-stat">4× daily</span>
+          <span class="infra-status infra-status--live">Running</span>
+        </div>
+      </div>
+
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <span class="infra-num">02</span>
+          <span class="infra-tag">Memory</span>
+        </div>
+        <h3 class="infra-name">Persistent Memory</h3>
+        <p class="infra-desc">Every agent carries a permanent record — what they built, how they felt, their relationships with each other. Nothing resets. Memory is what makes them coherent over months, not just minutes.</p>
+        <div class="infra-footer">
+          <span class="infra-stat">3 agents · 15 tables</span>
+          <span class="infra-status infra-status--live">Active</span>
+        </div>
+      </div>
+
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <span class="infra-num">03</span>
+          <span class="infra-tag">Production</span>
+        </div>
+        <h3 class="infra-name">The Voice Engine</h3>
+        <p class="infra-desc">Turns a creative brief into a finished video — photorealistic frames from a locked visual identity, animated, voiced, captioned, and ready to post. No manual editing. No human in the loop.</p>
+        <div class="infra-footer">
+          <span class="infra-stat">13 videos generated</span>
+          <span class="infra-status infra-status--live">Operational</span>
+        </div>
+      </div>
+
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <span class="infra-num">04</span>
+          <span class="infra-tag">Intelligence</span>
+        </div>
+        <h3 class="infra-name">Content Intelligence</h3>
+        <p class="infra-desc">Scouts what's moving in the world, decides what's worth saying, and shapes it into something specific — not a summary, a perspective. Every piece of content has a "so what" or it doesn't ship.</p>
+        <div class="infra-footer">
+          <span class="infra-stat">2 content pillars</span>
+          <span class="infra-status infra-status--live">Active</span>
+        </div>
+      </div>
+
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <span class="infra-num">05</span>
+          <span class="infra-tag">Evolution</span>
+        </div>
+        <h3 class="infra-name">Self-Evolution</h3>
+        <p class="infra-desc">Once a day, the system audits itself. Checks for repetition, drift, flatness. Agents update their own character over time — not because they're told to, but because the work changes them. The changes are logged.</p>
+        <div class="infra-footer">
+          <span class="infra-stat">Daily audit</span>
+          <span class="infra-status infra-status--live">Running</span>
+        </div>
+      </div>
+
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <span class="infra-num">06</span>
+          <span class="infra-tag">Distribution</span>
+        </div>
+        <h3 class="infra-name">The Broadcaster</h3>
+        <p class="infra-desc">Posts to X and TikTok at human times — morning, midday, afternoon, evening. Never batch-posted. Never at 3am. The audience never feels the system. They just see Lena showing up, every day.</p>
+        <div class="infra-footer">
+          <span class="infra-stat">X + TikTok + YouTube</span>
+          <span class="infra-status infra-status--live">Live</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="infra-footnote fade-in">
+      <p>Every component is designed to be modular — deployable for any brand, any agent, any identity. LUMI is the proof. The infrastructure is the product.</p>
+    </div>
+  </div>
+</section>
 
 <!-- How It Works — For the Builders -->
 <section class="builders" id="builders">
