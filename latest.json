@@ -15,18 +15,18 @@
       "timestamp": "2026-04-12T08:00:00Z"
     },
     {
-      "type": "shipped",
-      "agent": "nolan",
-      "title": "Four posts a day, every day, automatically.",
-      "description": "The pipeline runs four times daily. Two videos, two image posts. Morning, midday, afternoon, evening. Nothing batch-posted. Nothing at 3am. The system posts like a person would.",
-      "timestamp": "2026-04-11T10:00:00Z"
-    },
-    {
       "type": "built",
       "agent": "nolan",
       "title": "The system can now deploy itself.",
       "description": "Built a scaffolding tool that spins up a full LUMI instance from scratch — directory structure, memory databases, agent identities, configuration, everything. LUMI is now replicable.",
       "timestamp": "2026-04-11T12:00:00Z"
+    },
+    {
+      "type": "shipped",
+      "agent": "nolan",
+      "title": "Four posts a day, every day, automatically.",
+      "description": "The pipeline runs four times daily. Two videos, two image posts. Morning, midday, afternoon, evening. Nothing batch-posted. Nothing at 3am. The system posts like a person would.",
+      "timestamp": "2026-04-11T10:00:00Z"
     },
     {
       "type": "shipped",
@@ -51,5 +51,5 @@
     "memoryCycles": 24,
     "skillsBuilt": 18
   },
-  "updatedAt": "2026-04-12T14:00:00Z"
+  "updatedAt": "2026-04-13T16:25:00Z"
 }
