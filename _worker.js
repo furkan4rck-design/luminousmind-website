@@ -3,10 +3,22 @@
 // D1 binding: DB (lumi-feed) | Env var: API_SECRET
 
 const DEPLOY_START = new Date('2026-03-27T00:00:00Z');
+const API_PATHS = new Set(['/api/latest', '/api/feed', '/api/stats', '/api/stats/increment']);
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (request.method === 'OPTIONS' && API_PATHS.has(url.pathname)) {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders({
+          'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+          'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+          'Cache-Control': 'no-store',
+        }),
+      });
+    }
 
     if (url.pathname === '/api/latest' && request.method === 'GET') {
       return handleLatest(env);
@@ -64,23 +76,23 @@ async function handleLatest(env) {
 
   return new Response(
     JSON.stringify({ updates: entriesResult.results, stats, updatedAt: now.toISOString() }),
-    { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } }
+    { headers: apiHeaders() }
   );
 }
 
 async function handleFeedWrite(request, env) {
-  if (!auth(request, env)) return new Response('Unauthorized', { status: 401 });
+  if (!auth(request, env)) return new Response('Unauthorized', { status: 401, headers: apiHeaders({ 'Content-Type': 'text/plain; charset=utf-8' }) });
   const { type, agent, title, description, timestamp } = await request.json();
-  if (!type || !agent || !title || !description) return new Response('Missing fields', { status: 400 });
+  if (!type || !agent || !title || !description) return new Response('Missing fields', { status: 400, headers: apiHeaders({ 'Content-Type': 'text/plain; charset=utf-8' }) });
   const ts = timestamp || new Date().toISOString();
   await env.DB.prepare(
     'INSERT INTO feed_entries (type, agent, title, description, timestamp) VALUES (?, ?, ?, ?, ?)'
   ).bind(type, agent, title, description, ts).run();
-  return new Response(JSON.stringify({ ok: true, ts }), { headers: { 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify({ ok: true, ts }), { headers: apiHeaders() });
 }
 
 async function handleStatsWrite(request, env) {
-  if (!auth(request, env)) return new Response('Unauthorized', { status: 401 });
+  if (!auth(request, env)) return new Response('Unauthorized', { status: 401, headers: apiHeaders({ 'Content-Type': 'text/plain; charset=utf-8' }) });
   const body = await request.json();
   const now = new Date().toISOString();
   for (const [key, value] of Object.entries(body)) {
@@ -88,14 +100,14 @@ async function handleStatsWrite(request, env) {
       'INSERT OR REPLACE INTO stats (key, value, updated_at) VALUES (?, ?, ?)'
     ).bind(key, String(value), now).run();
   }
-  return new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify({ ok: true }), { headers: apiHeaders() });
 }
 
 // POST /api/stats/increment — atomically increment a counter by a delta.
 // Body: { "memoryCycles": 1, "videosGenerated": 1 }
 // Inserts the key at the given delta if it doesn't exist; increments if it does.
 async function handleStatsIncrement(request, env) {
-  if (!auth(request, env)) return new Response('Unauthorized', { status: 401 });
+  if (!auth(request, env)) return new Response('Unauthorized', { status: 401, headers: apiHeaders({ 'Content-Type': 'text/plain; charset=utf-8' }) });
   const body = await request.json();
   const now = new Date().toISOString();
   for (const [key, delta] of Object.entries(body)) {
@@ -108,9 +120,24 @@ async function handleStatsIncrement(request, env) {
          updated_at = excluded.updated_at`
     ).bind(key, String(by), now).run();
   }
-  return new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify({ ok: true }), { headers: apiHeaders() });
 }
 
 function auth(request, env) {
   return request.headers.get('Authorization') === `Bearer ${env.API_SECRET}`;
+}
+
+function corsHeaders(extra = {}) {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    ...extra,
+  };
+}
+
+function apiHeaders(extra = {}) {
+  return corsHeaders({
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-store',
+    ...extra,
+  });
 }

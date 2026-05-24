@@ -2796,7 +2796,7 @@
       return entry;
     }
 
-    fetch('/api/latest')
+    fetch('/api/latest', { cache: 'no-store' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
 
@@ -2813,7 +2813,6 @@
           setVal('stat-posts-week', s.postsThisWeek);
           setVal('stat-videos',     s.videosGenerated);
           setVal('stat-memory',     s.memoryCycles);
-          if (s.skillsBuilt) setVal('stat-memory', s.skillsBuilt); // prefer skills count if present
           if (s.lastHeartbeat) {
             var hb = document.getElementById('stat-heartbeat');
             if (hb) hb.textContent = relTime(s.lastHeartbeat);
